@@ -1,10 +1,15 @@
 require 'sinatra/base'
 require 'json'
+require_relative "./api_snippets"
 
 module ExpenseTracker
   class API < Sinatra::Base
+
     post '/expenses' do
-      JSON.generate('expense_id' => 42)
+      expense = JSON.parse(request.body.read)
+      binding.pry
+      result = @ledger.record(expense)
+      JSON.generate('expense_id' => result.expense_id)
     end
 
     get '/expenses/:date' do
