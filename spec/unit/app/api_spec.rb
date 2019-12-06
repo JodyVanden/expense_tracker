@@ -1,6 +1,5 @@
 require_relative '../../../app/api'
 require 'rack/test'
-require 'pry'
 
 module ExpenseTracker
   RecordResult = Struct.new(:success?, :expense_id, :error_message)
@@ -12,19 +11,19 @@ module ExpenseTracker
       API.new(ledger: ledger)
     end
 
-    let!(:ledger) { instance_double('ExpenseTracker::Ledger') }
+    let(:ledger) { instance_double('ExpenseTracker::Ledger') }
 
     describe 'POST /expenses' do
       context 'when the expense is sucessfully recorded' do
         it 'returns the expense id' do
           expense = { 'some' => 'data' }
-          post '/expenses', JSON.generate(expense)
 
           allow(ledger).to receive(:record)
             .with(expense)
             .and_return(RecordResult.new(true, 417, nil))
 
-          # binding.pry
+          post '/expenses', JSON.generate(expense)
+
           parsed = JSON.parse(last_response.body)
           expect(parsed).to include('expense_id' => 417)
         end
